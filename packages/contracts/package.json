@@ -1,0 +1,11 @@
+{
+  "name": "@ekms/contracts",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./src/index.ts",
+  "exports": { ".": { "types": "./src/index.ts", "import": "./dist/index.js" } },
+  "scripts": { "build": "tsc -p tsconfig.build.json", "lint": "eslint src --ext .ts", "typecheck": "tsc -p tsconfig.json --noEmit", "test": "vitest run", "test:integration": "vitest run" },
+  "dependencies": { "zod": "^4.1.5" },
+  "devDependencies": { "eslint": "^9.35.0", "typescript": "^5.9.2", "vitest": "^3.2.4" }
+}

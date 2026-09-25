@@ -1,0 +1,7 @@
+{
+  "testEnvironment": "node",
+  "rootDir": "..",
+  "setupFiles": ["<rootDir>/test/setup-integration.ts"],
+  "testRegex": ".*\\.integration-spec\\.ts$",
+  "transform": { "^.+\\.ts$": ["ts-jest", { "tsconfig": "tsconfig.json" }] }
+}
