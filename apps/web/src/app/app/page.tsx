@@ -22,22 +22,21 @@ function Workspace() {
         <Card className="workspace-welcome">
           <p className="eyebrow">Available now</p>
           <h2>Your account, in one place.</h2>
-          <p>
-            Review your active sessions and manage how you stay signed in.
-            Learning tools will appear in later phases.
-          </p>
+          <p>Review your active sessions and manage how you stay signed in.</p>
           <Link className={linkButtonClass()} href="/account">
             Account and security <span aria-hidden="true">→</span>
           </Link>
         </Card>
         <Card tone="lavender" className="workspace-aside">
-          <p className="eyebrow">What comes next</p>
-          <h2>More room to learn.</h2>
+          <p className="eyebrow">Available now</p>
+          <h2>Build your word library.</h2>
           <p>
-            Vocabulary, focused practice, writing, and progress views are
-            planned for future phases. They will appear here when they are
-            ready.
+            Save a word and the meaning you intend to learn. Source context is
+            optional, and you can organize your entries with personal tags.
           </p>
+          <Link className={linkButtonClass('secondary')} href="/vocabulary">
+            Open Vocabulary <span aria-hidden="true">→</span>
+          </Link>
         </Card>
       </div>
       <Card className="workspace-account" aria-label="Current account">

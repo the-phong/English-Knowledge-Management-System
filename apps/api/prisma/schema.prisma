@@ -8,30 +8,33 @@ datasource db {
 }
 
 model User {
-  id              String           @id @default(uuid()) @db.Uuid
-  normalizedEmail String           @unique @map("normalized_email") @db.VarChar(254)
-  passwordHash    String           @map("password_hash") @db.VarChar(255)
-  timezone        String           @default("UTC") @db.VarChar(64)
-  preferences     Json             @default("{}")
-  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id              String              @id @default(uuid()) @db.Uuid
+  normalizedEmail String              @unique @map("normalized_email") @db.VarChar(254)
+  passwordHash    String              @map("password_hash") @db.VarChar(255)
+  timezone        String              @default("UTC") @db.VarChar(64)
+  preferences     Json                @default("{}")
+  createdAt       DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
   sessions        RefreshSession[]
   securityEvents  SecurityEvent[]
+  vocabularyItems VocabularyItem[]
+  contextTags     ContextTag[]
+  idempotency     IdempotencyRecord[]
 
   @@map("users")
 }
 
 model RefreshSession {
-  id           String          @id @default(uuid()) @db.Uuid
-  userId       String          @map("user_id") @db.Uuid
-  tokenHash    String          @unique @map("token_hash") @db.VarChar(64)
-  familyId     String          @map("family_id") @db.Uuid
-  createdAt    DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
-  expiresAt    DateTime        @map("expires_at") @db.Timestamptz(6)
-  consumedAt   DateTime?       @map("consumed_at") @db.Timestamptz(6)
-  revokedAt    DateTime?       @map("revoked_at") @db.Timestamptz(6)
-  replacedById String?         @map("replaced_by_id") @db.Uuid
-  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  tokenHash    String    @unique @map("token_hash") @db.VarChar(64)
+  familyId     String    @map("family_id") @db.Uuid
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  expiresAt    DateTime  @map("expires_at") @db.Timestamptz(6)
+  consumedAt   DateTime? @map("consumed_at") @db.Timestamptz(6)
+  revokedAt    DateTime? @map("revoked_at") @db.Timestamptz(6)
+  replacedById String?   @map("replaced_by_id") @db.Uuid
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, revokedAt, expiresAt])
   @@index([familyId])
@@ -51,4 +54,108 @@ model SecurityEvent {
   @@index([userId, occurredAt])
   @@index([familyId, occurredAt])
   @@map("security_events")
+}
+
+model Lexeme {
+  id              String            @id @default(uuid()) @db.Uuid
+  normalizedLemma String            @unique @map("normalized_lemma") @db.VarChar(100)
+  language        String            @default("en") @db.VarChar(8)
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  senses          DictionarySense[]
+  vocabularyItems VocabularyItem[]
+
+  @@map("lexemes")
+}
+
+// Shared rows contain only locally authored fixture metadata or future rights-approved content.
+model DictionarySense {
+  id              String           @id @default(uuid()) @db.Uuid
+  lexemeId        String           @map("lexeme_id") @db.Uuid
+  providerId      String           @map("provider_id") @db.VarChar(64)
+  sourceSenseId   String           @map("source_sense_id") @db.VarChar(128)
+  partOfSpeech    String           @map("part_of_speech") @db.VarChar(32)
+  definition      String           @db.VarChar(1000)
+  attribution     String           @db.VarChar(255)
+  provenance      String           @db.VarChar(64)
+  providerVersion String           @map("provider_version") @db.VarChar(32)
+  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  lexeme          Lexeme           @relation(fields: [lexemeId], references: [id], onDelete: Restrict)
+  vocabularyItems VocabularyItem[]
+
+  @@unique([providerId, sourceSenseId])
+  @@unique([id, lexemeId])
+  @@index([lexemeId, partOfSpeech])
+  @@map("dictionary_senses")
+}
+
+model VocabularyItem {
+  id                   String           @id @default(uuid()) @db.Uuid
+  userId               String           @map("user_id") @db.Uuid
+  lexemeId             String           @map("lexeme_id") @db.Uuid
+  dictionarySenseId    String?          @map("dictionary_sense_id") @db.Uuid
+  senseKey             String           @map("sense_key") @db.VarChar(160)
+  partOfSpeech         String           @map("part_of_speech") @db.VarChar(32)
+  definition           String           @db.VarChar(1000)
+  definitionProvenance String           @map("definition_provenance") @db.VarChar(64)
+  attribution          String?          @db.VarChar(255)
+  sourceContext        String?          @map("source_context") @db.VarChar(3000)
+  note                 String           @default("") @db.VarChar(3000)
+  importance           Int              @default(1)
+  archivedAt           DateTime?        @map("archived_at") @db.Timestamptz(6)
+  version              Int              @default(1)
+  createdAt            DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user                 User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lexeme               Lexeme           @relation(fields: [lexemeId], references: [id], onDelete: Restrict)
+  dictionarySense      DictionarySense? @relation(fields: [dictionarySenseId, lexemeId], references: [id, lexemeId], onDelete: Restrict)
+  tags                 VocabularyTag[]
+
+  @@unique([userId, senseKey])
+  @@unique([id, userId])
+  @@index([userId, archivedAt, createdAt, id])
+  @@index([userId, lexemeId])
+  @@map("vocabulary_items")
+}
+
+model ContextTag {
+  id             String          @id @default(uuid()) @db.Uuid
+  userId         String          @map("user_id") @db.Uuid
+  name           String          @db.VarChar(50)
+  normalizedName String          @map("normalized_name") @db.VarChar(50)
+  version        Int             @default(1)
+  createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items          VocabularyTag[]
+
+  @@unique([userId, normalizedName])
+  @@unique([id, userId])
+  @@map("context_tags")
+}
+
+model VocabularyTag {
+  userId           String         @map("user_id") @db.Uuid
+  vocabularyItemId String         @map("vocabulary_item_id") @db.Uuid
+  contextTagId     String         @map("context_tag_id") @db.Uuid
+  item             VocabularyItem @relation(fields: [vocabularyItemId, userId], references: [id, userId], onDelete: Cascade)
+  tag              ContextTag     @relation(fields: [contextTagId, userId], references: [id, userId], onDelete: Cascade)
+
+  @@id([vocabularyItemId, contextTagId])
+  @@index([userId, contextTagId])
+  @@map("vocabulary_tags")
+}
+
+model IdempotencyRecord {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  operation    String   @db.VarChar(64)
+  key          String   @db.Uuid
+  requestHash  String   @map("request_hash") @db.VarChar(64)
+  responseBody Json     @map("response_body")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  expiresAt    DateTime @map("expires_at") @db.Timestamptz(6)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, operation, key])
+  @@index([expiresAt])
+  @@map("idempotency_records")
 }

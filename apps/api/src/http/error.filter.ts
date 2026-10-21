@@ -8,6 +8,7 @@ import {
 import type { Response } from 'express';
 import type { RequestWithId } from './request-id.middleware';
 import { AuthError } from '../auth/auth-error';
+import { VocabularyError } from '../vocabulary/vocabulary-error';
 
 @Catch()
 export class ErrorFilter implements ExceptionFilter {
@@ -20,7 +21,7 @@ export class ErrorFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
     const code =
-      exception instanceof AuthError
+      exception instanceof AuthError || exception instanceof VocabularyError
         ? exception.code
         : status === 503
           ? 'DEPENDENCY_UNAVAILABLE'
@@ -40,7 +41,7 @@ export class ErrorFilter implements ExceptionFilter {
                         ? 'METHOD_NOT_ALLOWED'
                         : 'INTERNAL_ERROR';
     const message =
-      exception instanceof AuthError
+      exception instanceof AuthError || exception instanceof VocabularyError
         ? exception.safeMessage
         : status === 503
           ? 'Required dependency unavailable'

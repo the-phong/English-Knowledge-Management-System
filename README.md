@@ -1,6 +1,6 @@
-# EKMS — Foundation, Authentication and UI Foundation
+# EKMS — Foundation, Authentication, UI and Vocabulary
 
-English Knowledge Management System is a multi-user English learning product. This repository contains Phase 01 infrastructure, Phase 02 authentication, and the Phase 03 UI foundation for the four working routes. Vocabulary, IELTS catalog, learning, Writing, mastery, dashboard, AI Tutor, and Web3 are not implemented. The approved [product specification](https://docs.google.com/document/d/17rny6Cr5BgZ3q_pS7MFjx97LjRXEvXKxUtOhYp4ogMA/edit) governs later work; Appendix D v1.4 takes priority for changed business rules.
+English Knowledge Management System is a multi-user English learning product. This repository contains Phase 01 infrastructure, Phase 02 authentication, the Phase 03 UI foundation, and Phase 04 personal vocabulary management. The curated IELTS catalog, learning, Writing, mastery, dashboard, AI Tutor, and Web3 are not implemented. The approved [product specification](https://docs.google.com/document/d/17rny6Cr5BgZ3q_pS7MFjx97LjRXEvXKxUtOhYp4ogMA/edit) governs later work; Appendix D v1.4 takes priority for changed business rules.
 
 ## Architecture and layout
 
@@ -53,6 +53,16 @@ The entry page links to `/auth`; successful login opens `/app`, an authenticated
 Endpoints are `POST /api/v1/auth/register`, `login`, `refresh`, `logout`, `logout-all`; `GET /api/v1/auth/sessions`, `GET /api/v1/me`; and `DELETE /api/v1/auth/sessions/:id`. Successful responses use `{ "data": ... }`; errors use `{ "error": { "code", "message", "requestId" } }`. Never paste token or cookie values into logs or support chats.
 
 ## Operations and troubleshooting
+
+### Personal vocabulary (Phase 04)
+
+Authenticated users can open `/vocabulary` to add their own target meanings, optional source context and notes, organize personal tags, search and filter, and archive or restore a sense. Adding a word does not create a learning attempt or mastery score. Source context is optional and empty input becomes null. Exact recognized senses and exact manual canonical definitions deduplicate per user; a different meaning under the same lemma remains separate. See [ADR 0006](docs/adr/0006-vocabulary-identity-and-rights.md) for identity, concurrency, cursor, and rights decisions.
+
+The UI can show original local example senses when the user explicitly requests them. No licensed live dictionary is configured. Without one, lookup reports unavailable and manual add continues to work. These examples are not the curated IELTS catalog. User-authored meanings and context remain private; any future curated or licensed content requires its own provenance and rights review.
+
+The owner-scoped REST API includes `GET /api/v1/dictionary/lookup?q=…`, `POST/GET /api/v1/vocabulary`, `GET/PATCH /api/v1/vocabulary/:id`, `POST /api/v1/vocabulary/:id/archive` and `/restore`, and `GET/POST /api/v1/tags`, `PATCH/DELETE /api/v1/tags/:id`. The optional `provider=fixture` lookup is development only. POST mutations require a UUID `Idempotency-Key`; edits and archive/restore require `expectedVersion`. Lists default to 20 active items, cap at 100, and return an opaque `nextCursor` for stable pagination. All private resource IDs are checked with the authenticated owner ID.
+
+Phase 04 adds the additive `20261021_p04_vocabulary` migration. Confirm the database target and backup before `prisma migrate deploy`; never use reset or destructive volume cleanup. The real-browser vocabulary test is `NODE_PATH=/tmp/ekms-p03-browser/node_modules node research/evidence/phase04-browser-smoke.cjs` against the owned local stack. It creates and deletes only temporary test users and writes screenshots to `research/evidence/phase04-visual/`. The local benchmark is `node research/evidence/phase04-benchmark.cjs`; it creates and deletes one temporary user. Neither script is a production load test.
 
 - `docker compose ps` shows service and health state; `docker compose logs api worker` shows structured startup/request events. Logs exclude request bodies, headers, queries, and connection URLs.
 - API liveness healthy but readiness 503 means PostgreSQL or Redis is unavailable. Check only this Compose project's services. The response deliberately omits dependency and credential details.

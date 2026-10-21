@@ -83,7 +83,8 @@ test('workspace navigation exposes only working routes and current page', () => 
   );
   assert.match(html, /aria-label="Workspace"/);
   assert.match(html, /href="\/app"/);
+  assert.match(html, /href="\/vocabulary"/);
   assert.match(html, /href="\/account"/);
   assert.match(html, /aria-current="page"/);
-  assert.doesNotMatch(html, /href="\/(vocabulary|learning|writing|progress)"/);
+  assert.doesNotMatch(html, /href="\/(learning|writing|progress)"/);
 });

@@ -22,6 +22,7 @@ type AuthState =
   | { status: 'authenticated'; user: AccountUser };
 type AuthContextValue = {
   state: AuthState;
+  request<T>(path: string, options?: RequestInit): Promise<T>;
   login(email: string, password: string): Promise<void>;
   register(email: string, password: string): Promise<void>;
   logout(): Promise<void>;
@@ -98,6 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const value: AuthContextValue = {
     state,
+    request: authorized,
     async login(email, password) {
       const result = await authRequest<{
         accessToken: string;

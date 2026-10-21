@@ -4,9 +4,10 @@ import { AuthModule } from './auth/auth.module';
 import { HealthService } from './health/health.service';
 import { HealthController } from './health/health.controller';
 import { RequestIdMiddleware } from './http/request-id.middleware';
+import { VocabularyModule } from './vocabulary/vocabulary.module';
 
 @Module({
-  imports: [InfrastructureModule, AuthModule],
+  imports: [InfrastructureModule, AuthModule, VocabularyModule],
   controllers: [HealthController],
   providers: [HealthService],
 })

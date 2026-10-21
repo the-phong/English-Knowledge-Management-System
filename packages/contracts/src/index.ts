@@ -1,4 +1,5 @@
 import { z } from 'zod';
+export * from './vocabulary';
 
 export const healthSchema = z.object({ status: z.literal('ok') });
 export const readinessSchema = z.object({ status: z.literal('ready') });

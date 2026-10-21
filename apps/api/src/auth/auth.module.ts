@@ -15,5 +15,6 @@ import { RateLimitService } from './rate-limit.service';
     OriginGuard,
     RateLimitService,
   ],
+  exports: [AuthService, AuthGuard, OriginGuard],
 })
 export class AuthModule {}

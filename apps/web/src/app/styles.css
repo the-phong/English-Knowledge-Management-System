@@ -957,3 +957,208 @@ h3 {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Vocabulary Hub: the library and editor use the existing semantic tokens. */
+.vocab-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.9fr);
+  align-items: start;
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+}
+.vocab-library,
+.vocab-side {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-6);
+}
+.vocab-panel,
+.vocab-tags {
+  display: grid;
+  gap: var(--space-5);
+}
+.vocab-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+.vocab-panel__header h2,
+.vocab-tags h2 {
+  margin: 0;
+}
+.vocab-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: var(--space-4);
+  margin: var(--space-6) 0;
+}
+.vocab-filters > .field:nth-of-type(n + 2) {
+  grid-column: auto;
+}
+.vocab-list,
+.vocab-tag-list {
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.vocab-word {
+  display: grid;
+  width: 100%;
+  min-height: 5rem;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-foreground);
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.vocab-word:hover,
+.vocab-word--selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+.vocab-word__top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.vocab-word__top strong {
+  font-size: var(--text-card);
+}
+.vocab-word small,
+.vocab-sense small {
+  color: var(--color-muted);
+}
+.vocab-pagination,
+.vocab-actions,
+.vocab-lookup,
+.vocab-tag-create,
+.vocab-tag-edit {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+.vocab-pagination {
+  justify-content: space-between;
+  margin-top: var(--space-5);
+}
+.vocab-form {
+  display: grid;
+  gap: var(--space-5);
+}
+.field__textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+.field__optional,
+.text-muted {
+  color: var(--color-muted);
+  font-size: var(--text-body-sm);
+}
+.vocab-tag-choices,
+.vocab-senses {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+.vocab-tag-choices legend,
+.vocab-senses legend {
+  padding: 0 var(--space-2);
+  font-weight: 700;
+}
+.vocab-check,
+.vocab-sense {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  gap: var(--space-3);
+  cursor: pointer;
+}
+.vocab-check input,
+.vocab-sense input {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--color-primary);
+}
+.vocab-sense span {
+  display: grid;
+  gap: var(--space-1);
+}
+.vocab-detail__meaning {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  font-size: var(--text-card);
+  font-weight: 700;
+}
+.vocab-detail__body {
+  display: grid;
+  gap: var(--space-4);
+  overflow-wrap: anywhere;
+}
+.vocab-detail__body h3,
+.vocab-detail__body p {
+  margin: 0;
+}
+.vocab-detail__body h3 {
+  font-size: var(--text-label);
+}
+.vocab-tag-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.vocab-tag-edit,
+.vocab-tag-list .confirm-panel {
+  flex-basis: 100%;
+}
+.vocab-tag-edit .field,
+.vocab-tag-create .field {
+  flex: 1 1 12rem;
+}
+@media (max-width: 74rem) {
+  .vocab-layout {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 45rem) {
+  .vocab-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .vocab-filters > .ui-button {
+    width: 100%;
+  }
+  .vocab-pagination {
+    gap: var(--space-2);
+  }
+}
+@media (max-width: 25rem) {
+  .workspace-nav__icon {
+    display: none;
+  }
+  .workspace-nav {
+    gap: var(--space-1);
+  }
+  .workspace-nav a {
+    padding-inline: var(--space-2);
+    font-size: var(--text-label);
+  }
+}

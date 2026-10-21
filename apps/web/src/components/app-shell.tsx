@@ -5,7 +5,7 @@ import { AppContainer } from './ui/layout';
 
 type AppShellProps = {
   children: ReactNode;
-  current: 'app' | 'account';
+  current: 'app' | 'vocabulary' | 'account';
   userEmail: string;
 };
 
@@ -27,6 +27,15 @@ export function AppShell({ children, current, userEmail }: AppShellProps) {
               ⌂
             </span>
             Home
+          </Link>
+          <Link
+            href="/vocabulary"
+            aria-current={current === 'vocabulary' ? 'page' : undefined}
+          >
+            <span aria-hidden="true" className="workspace-nav__icon">
+              ◇
+            </span>
+            Vocabulary
           </Link>
           <Link
             href="/account"
