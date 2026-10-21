@@ -2,13 +2,13 @@
 
 ## 1. Executive Summary
 
-Phase 03 implemented a semantic design system, reusable UI components, responsive authenticated shell, and polished versions of the four existing routes. Authentication and session behavior remain owned by the Phase 02 client and backend. The technical verification gates passed, including a fresh Docker web image build and a real Chromium workflow. Git delivery evidence is finalized separately after this report is committed. Product Owner and Project Controller acceptance is still required.
+Phase 03 implemented a semantic design system, reusable UI components, responsive authenticated shell, and polished versions of the four existing routes. Authentication and session behavior remain owned by the Phase 02 client and backend. The technical verification gates passed, including a fresh Docker web image build and a real Chromium workflow. The implementation commit was pushed and independently verified on the authorized feature branch. Product Owner and Project Controller acceptance is still required.
 
 The UI does not represent future Vocabulary, Writing, Learning, Mastery, or Dashboard workflows as available. No backend models, endpoints, migrations, or security rules changed. Browser coverage is Chromium only; automated accessibility results are not a full conformance audit.
 
 ## 2. Git Baseline
 
-Repository: `/mnt/d/Personal/English-Knowledge-Management-System`. Initial tree was clean on the approved Phase 02 commit `dcb96502cdd02d0e96cbb9dd4b339c8dd57417ac`. The current implementation branch is `feature/ekms-p03-ui`, created from that exact commit. The remote Phase 02 branch matched it. The protected remote `master` baseline was `89e4c6b1defea5bf6c89c7a71f450e3abd491e8a`. Delivery SHAs and final status are recorded in the final chat report after push.
+Repository: `/mnt/d/Personal/English-Knowledge-Management-System`. Initial tree was clean on the approved Phase 02 commit `dcb96502cdd02d0e96cbb9dd4b339c8dd57417ac`. The current implementation branch is `feature/ekms-p03-ui`, created from that exact commit. The remote Phase 02 branch matched it. The protected remote `master` baseline was `89e4c6b1defea5bf6c89c7a71f450e3abd491e8a`. The implementation commit is `6bbf180772889b3c7c29daa9b6d3f1f1761bde49`; its feature-branch push matched the remote SHA. Protected `master` remained unchanged. The final documentation commit and remote SHA are recorded in the final chat report.
 
 ## 3. Design System
 
@@ -67,24 +67,24 @@ The combined isolated HTTP/PostgreSQL suite passed registration, login, protecte
 
 ## 12. Acceptance Gates U01–U16
 
-| Gate | Status at report preparation | Evidence / limit                                                                                                                                         |
-| ---- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| U01  | PASS                         | Exact Phase 02 base and clean branch creation                                                                                                            |
-| U02  | PASS                         | `research/evidence/phase03-current-ui.md`                                                                                                                |
-| U03  | PASS                         | Semantic tokens in `tokens.css`                                                                                                                          |
-| U04  | PASS                         | Shared typography/spacing/color; screenshots and contrast checks                                                                                         |
-| U05  | PASS                         | Consumed, typed primitives and component tests                                                                                                           |
-| U06  | PASS                         | Desktop/mobile shell; 25 viewport checks                                                                                                                 |
-| U07  | PASS                         | Four working routes redesigned; browser auth flow                                                                                                        |
-| U08  | PASS                         | Only working actions; no fabricated metrics or business modules                                                                                          |
-| U09  | PASS                         | Nine axe scans, keyboard/focus checks, visible states; full WCAG audit deferred                                                                          |
-| U10  | PASS                         | Loading, empty, error, success, disabled and pending states covered in code/tests/browser                                                                |
-| U11  | PASS                         | Web component and page interaction tests 11/11                                                                                                           |
-| U12  | PASS                         | Production-mode Chromium smoke, 11 screenshots, visual inspection                                                                                        |
-| U13  | PASS                         | Isolated auth integration suite and browser session flow                                                                                                 |
-| U14  | PASS                         | Build, lint, typecheck, tests, Compose, Prisma, live health passed                                                                                       |
-| U15  | PASS                         | ADR, inventory, baseline assessment, reproducible evidence, screenshots and report                                                                       |
-| U16  | PARTIAL until delivery       | Commit, feature-only push, remote SHA, and protected `master` verification follow this file's preparation; final evidence is in the chat delivery report |
+| Gate | Status at report preparation | Evidence / limit                                                                                                                                                                             |
+| ---- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| U01  | PASS                         | Exact Phase 02 base and clean branch creation                                                                                                                                                |
+| U02  | PASS                         | `research/evidence/phase03-current-ui.md`                                                                                                                                                    |
+| U03  | PASS                         | Semantic tokens in `tokens.css`                                                                                                                                                              |
+| U04  | PASS                         | Shared typography/spacing/color; screenshots and contrast checks                                                                                                                             |
+| U05  | PASS                         | Consumed, typed primitives and component tests                                                                                                                                               |
+| U06  | PASS                         | Desktop/mobile shell; 25 viewport checks                                                                                                                                                     |
+| U07  | PASS                         | Four working routes redesigned; browser auth flow                                                                                                                                            |
+| U08  | PASS                         | Only working actions; no fabricated metrics or business modules                                                                                                                              |
+| U09  | PASS                         | Nine axe scans, keyboard/focus checks, visible states; full WCAG audit deferred                                                                                                              |
+| U10  | PASS                         | Loading, empty, error, success, disabled and pending states covered in code/tests/browser                                                                                                    |
+| U11  | PASS                         | Web component and page interaction tests 11/11                                                                                                                                               |
+| U12  | PASS                         | Production-mode Chromium smoke, 11 screenshots, visual inspection                                                                                                                            |
+| U13  | PASS                         | Isolated auth integration suite and browser session flow                                                                                                                                     |
+| U14  | PASS                         | Build, lint, typecheck, tests, Compose, Prisma, live health passed                                                                                                                           |
+| U15  | PASS                         | ADR, inventory, baseline assessment, reproducible evidence, screenshots and report                                                                                                           |
+| U16  | PASS                         | Implementation commit `6bbf180` pushed only to the feature branch; remote SHA matched and protected `master` stayed unchanged. Final documentation commit verification is in the chat report |
 
 ## 13. Risks and Limitations
 
@@ -92,7 +92,7 @@ Chromium was the only real browser tested. Automated axe scans and token-pair co
 
 ## 14. Git Delivery
 
-This report is written before its implementation commit. Only `feature/ekms-p03-ui` may be pushed. The final chat report records commit SHA(s), exact push command/result, remote feature SHA, remote `master` before/after, and clean-tree status. No merge, PR, or deployment is part of Phase 03.
+`6bbf180772889b3c7c29daa9b6d3f1f1761bde49` (`feat(web): establish Phase 03 UI design system and responsive shell`) was pushed with `git push -u origin HEAD:refs/heads/feature/ekms-p03-ui` (exit 0). `git ls-remote` independently returned the same feature SHA and unchanged protected `master` SHA `89e4c6b1defea5bf6c89c7a71f450e3abd491e8a`; the working tree was clean at that check. This report update is a separate documentation commit; its final remote SHA and clean-tree check are in the final chat report. No merge, PR, or deployment is part of Phase 03.
 
 ## 15. Phase 04 Readiness
 
