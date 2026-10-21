@@ -2,7 +2,7 @@
 
 ## 1. Executive Summary and Overall Status
 
-Implementation and technical verification: **PASS**. Feature-branch delivery is pending at the time this repository report is prepared; the final chat report records the actual commit and remote SHA. Phase 04 adds owner-scoped personal vocabulary, manual add, sense identity, tags, search, cursor pagination, archive/restore, a rights-aware local dictionary fixture, and a responsive Vocabulary Hub. No IELTS catalog, Learning, Mastery, Writing, AI, or deployment was added.
+Implementation, technical verification, and implementation-commit delivery: **PASS**. The final chat report records the documentation sync commit SHA as well. Phase 04 adds owner-scoped personal vocabulary, manual add, sense identity, tags, search, cursor pagination, archive/restore, a rights-aware local dictionary fixture, and a responsive Vocabulary Hub. No IELTS catalog, Learning, Mastery, Writing, AI, or deployment was added.
 
 The real PostgreSQL/HTTP suite, browser flow, quality checks, migrations, latest API image export, runtime checks, and synthetic benchmark passed. A create-with-tag defect was found by a newly added integration case and fixed before final verification.
 
@@ -83,26 +83,26 @@ Root unit tests passed API 12/12 and web 13/13 plus existing config/worker/contr
 
 ## 17. Acceptance Gates V01–V18
 
-| Gate | Status           | Evidence                                                                                                             |
-| ---- | ---------------- | -------------------------------------------------------------------------------------------------------------------- |
-| V01  | PASS             | Exact Phase 03 ancestry and isolated Phase 04 branch.                                                                |
-| V02  | PASS             | Existing schema assessed; additive migration and backup reviewed.                                                    |
-| V03  | PASS             | Lexeme/sense split, canonicalization unit and integration tests.                                                     |
-| V04  | PASS             | Owner fields, scoped queries and composite tag FKs.                                                                  |
-| V05  | PASS             | Manual Add with provider unavailable, browser and HTTP tests.                                                        |
-| V06  | PASS             | Absent/null/empty context and max-bound tests.                                                                       |
-| V07  | PASS             | Same-sense duplicate and distinct-sense/owner cases.                                                                 |
-| V08  | PASS             | Serializable idempotency and version/concurrency tests.                                                              |
-| V09  | PASS             | Owner-scoped list/detail/edit/archive/restore tests.                                                                 |
-| V10  | PASS             | Tag CRUD, assignment, and cross-user negatives.                                                                      |
-| V11  | PASS             | Search/filter/signed-cursor tests.                                                                                   |
-| V12  | PASS             | Rights-aware fixture/no-provider/timeout/malformed tests.                                                            |
-| V13  | PASS             | Real responsive Vocabulary Hub and browser workflow.                                                                 |
-| V14  | PASS             | Five viewport checks, keyboard activation, axe scans, screenshots.                                                   |
-| V15  | PASS             | Isolated real PostgreSQL/HTTP security suite.                                                                        |
-| V16  | PASS             | Root quality, latest API image, runtime, prior-phase regressions.                                                    |
-| V17  | PASS             | ADR, contracts, benchmark, README and reproducible evidence.                                                         |
-| V18  | PENDING DELIVERY | Commit/push and remote SHA verification occur after this report is staged. Final chat report contains actual result. |
+| Gate | Status | Evidence                                                                                                                                                                                                |
+| ---- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| V01  | PASS   | Exact Phase 03 ancestry and isolated Phase 04 branch.                                                                                                                                                   |
+| V02  | PASS   | Existing schema assessed; additive migration and backup reviewed.                                                                                                                                       |
+| V03  | PASS   | Lexeme/sense split, canonicalization unit and integration tests.                                                                                                                                        |
+| V04  | PASS   | Owner fields, scoped queries and composite tag FKs.                                                                                                                                                     |
+| V05  | PASS   | Manual Add with provider unavailable, browser and HTTP tests.                                                                                                                                           |
+| V06  | PASS   | Absent/null/empty context and max-bound tests.                                                                                                                                                          |
+| V07  | PASS   | Same-sense duplicate and distinct-sense/owner cases.                                                                                                                                                    |
+| V08  | PASS   | Serializable idempotency and version/concurrency tests.                                                                                                                                                 |
+| V09  | PASS   | Owner-scoped list/detail/edit/archive/restore tests.                                                                                                                                                    |
+| V10  | PASS   | Tag CRUD, assignment, and cross-user negatives.                                                                                                                                                         |
+| V11  | PASS   | Search/filter/signed-cursor tests.                                                                                                                                                                      |
+| V12  | PASS   | Rights-aware fixture/no-provider/timeout/malformed tests.                                                                                                                                               |
+| V13  | PASS   | Real responsive Vocabulary Hub and browser workflow.                                                                                                                                                    |
+| V14  | PASS   | Five viewport checks, keyboard activation, axe scans, screenshots.                                                                                                                                      |
+| V15  | PASS   | Isolated real PostgreSQL/HTTP security suite.                                                                                                                                                           |
+| V16  | PASS   | Root quality, latest API image, runtime, prior-phase regressions.                                                                                                                                       |
+| V17  | PASS   | ADR, contracts, benchmark, README and reproducible evidence.                                                                                                                                            |
+| V18  | PASS   | Implementation commit `d0537a3907a6d1e4fefccce0f804cddd6a7d6ea8` pushed to the Phase 04 branch; remote SHA matched and `master` remained unchanged. The final documentation commit is reported in chat. |
 
 ## 18. Files Changed, ADRs and Documentation
 
@@ -110,7 +110,7 @@ New: Prisma migration; `apps/api/src/vocabulary/*`; API vocabulary unit/integrat
 
 ## 19. Git Commits, Push, Remote Verification and Working Tree
 
-This repository report is prepared before Git delivery so no commit SHA or push success is asserted here. Final review must scan staged files/secrets, check `git diff --cached --check`, commit only this branch, push `HEAD:refs/heads/feature/ekms-p04-vocabulary`, verify remote SHA, and confirm protected `master` remains unchanged. Actual results are recorded in the final chat report.
+The staged review found 42 intended files, no secret/environment files or generated builds, and `git diff --cached --check` exited 0. Implementation commit `d0537a3907a6d1e4fefccce0f804cddd6a7d6ea8` (`feat(vocabulary): add owner-scoped vocabulary management`) was pushed with `git push -u origin HEAD:refs/heads/feature/ekms-p04-vocabulary`, exit 0. Independent `git ls-remote` returned the same feature SHA. Protected `master` remained `89e4c6b1defea5bf6c89c7a71f450e3abd491e8a`. This report update is delivered in a separate documentation commit; its final SHA and clean working-tree verification appear in chat. No PR, merge, deployment, or protected-branch push occurred.
 
 ## 20. Remaining Risks and Phase 05 Readiness
 

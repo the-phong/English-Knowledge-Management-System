@@ -40,4 +40,6 @@ Initial focused integration failed with HTTP 500 for creating an item with an ow
 
 ## Evidence limitations
 
+Implementation commit `d0537a3907a6d1e4fefccce0f804cddd6a7d6ea8` was pushed to `feature/ekms-p04-vocabulary` and independently matched by `git ls-remote`; remote `master` stayed at `89e4c6b1defea5bf6c89c7a71f450e3abd491e8a`. The documentation sync commit and final clean status are recorded in the chat report.
+
 Automated axe scans and screenshot inspection are not a full WCAG conformance audit. Browser smoke used Chromium; other engines and assistive technology remain unverified. No production dictionary provider, licensing entitlement, IELTS catalog, Learning/Mastery side effect, or production load was tested or claimed.
