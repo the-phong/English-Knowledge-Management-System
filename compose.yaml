@@ -42,10 +42,20 @@ services:
     <<: *app
     command: ['pnpm', '--filter', '@ekms/api', 'start']
     environment:
-      NODE_ENV: production
+      NODE_ENV: ${API_NODE_ENV:-development}
       API_PORT: 3001
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
       REDIS_URL: redis://redis:6379
+      JWT_SIGNING_KEY_B64: ${JWT_SIGNING_KEY_B64:?Set JWT_SIGNING_KEY_B64 in .env}
+      REFRESH_PEPPER_B64: ${REFRESH_PEPPER_B64:?Set REFRESH_PEPPER_B64 in .env}
+      JWT_ISSUER: ${JWT_ISSUER:?Set JWT_ISSUER in .env}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:?Set JWT_AUDIENCE in .env}
+      AUTH_ALLOWED_ORIGINS: ${AUTH_ALLOWED_ORIGINS:?Set AUTH_ALLOWED_ORIGINS in .env}
+      AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:?Set AUTH_COOKIE_SECURE in .env}
+      AUTH_LOGIN_IP_LIMIT: ${AUTH_LOGIN_IP_LIMIT:-20}
+      AUTH_LOGIN_ACCOUNT_LIMIT: ${AUTH_LOGIN_ACCOUNT_LIMIT:-5}
+      AUTH_REGISTER_IP_LIMIT: ${AUTH_REGISTER_IP_LIMIT:-5}
+      AUTH_REFRESH_IP_LIMIT: ${AUTH_REFRESH_IP_LIMIT:-30}
     ports:
       - '127.0.0.1:${API_PORT:-3001}:3001'
     depends_on:
