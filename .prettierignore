@@ -1,0 +1,7 @@
+node_modules
+dist
+.next
+.turbo
+pnpm-lock.yaml
+research/evidence
+apps/web/next-env.d.ts

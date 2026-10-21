@@ -1,0 +1,2 @@
+# Prisma Migrate provider lock for the EKMS development database.
+provider = "postgresql"
