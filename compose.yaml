@@ -1,0 +1,103 @@
+name: ekms-p01-foundation
+
+x-app: &app
+  image: ekms-p01-foundation-app:local
+  build:
+    context: .
+    dockerfile: Dockerfile
+  restart: on-failure
+  init: true
+  networks: [ekms]
+
+services:
+  postgres:
+    image: postgres@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    networks: [ekms]
+
+  redis:
+    image: redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf
+    command: ['redis-server', '--appendonly', 'no']
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    networks: [ekms]
+
+  api:
+    <<: *app
+    command: ['pnpm', '--filter', '@ekms/api', 'start']
+    environment:
+      NODE_ENV: ${API_NODE_ENV:-development}
+      API_PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_SIGNING_KEY_B64: ${JWT_SIGNING_KEY_B64:?Set JWT_SIGNING_KEY_B64 in .env}
+      REFRESH_PEPPER_B64: ${REFRESH_PEPPER_B64:?Set REFRESH_PEPPER_B64 in .env}
+      JWT_ISSUER: ${JWT_ISSUER:?Set JWT_ISSUER in .env}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:?Set JWT_AUDIENCE in .env}
+      AUTH_ALLOWED_ORIGINS: ${AUTH_ALLOWED_ORIGINS:?Set AUTH_ALLOWED_ORIGINS in .env}
+      AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:?Set AUTH_COOKIE_SECURE in .env}
+      AUTH_LOGIN_IP_LIMIT: ${AUTH_LOGIN_IP_LIMIT:-20}
+      AUTH_LOGIN_ACCOUNT_LIMIT: ${AUTH_LOGIN_ACCOUNT_LIMIT:-5}
+      AUTH_REGISTER_IP_LIMIT: ${AUTH_REGISTER_IP_LIMIT:-5}
+      AUTH_REFRESH_IP_LIMIT: ${AUTH_REFRESH_IP_LIMIT:-30}
+    ports:
+      - '127.0.0.1:${API_PORT:-3001}:3001'
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3001/api/v1/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  worker:
+    <<: *app
+    command: ['pnpm', '--filter', '@ekms/worker', 'start']
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  web:
+    <<: *app
+    command: ['pnpm', '--filter', '@ekms/web', 'start']
+    environment:
+      NODE_ENV: production
+      API_INTERNAL_URL: http://api:3001
+      PORT: 3000
+    ports:
+      - '127.0.0.1:${WEB_PORT:-3000}:3000'
+    depends_on:
+      api: { condition: service_healthy }
+
+volumes:
+  postgres_data:
+
+networks:
+  ekms:

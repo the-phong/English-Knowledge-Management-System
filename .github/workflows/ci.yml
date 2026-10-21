@@ -1,0 +1,62 @@
+name: Foundation and authentication checks
+on:
+  push:
+    branches: ['feature/**']
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
+        env:
+          POSTGRES_USER: ekms_ci
+          POSTGRES_PASSWORD: ekms_ci_local_only
+          POSTGRES_DB: ekms_p02_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ekms_ci -d ekms_p02_test"
+          --health-interval 5s --health-timeout 3s --health-retries 12
+      redis:
+        image: redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 3s --health-retries 12
+    env:
+      DATABASE_URL: postgresql://ekms_ci:ekms_ci_local_only@localhost:5432/ekms_p02_test
+      REDIS_URL: redis://localhost:6379
+      API_INTERNAL_URL: http://localhost:3001
+      JWT_SIGNING_KEY_B64: AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=
+      REFRESH_PEPPER_B64: AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=
+      JWT_ISSUER: ekms-ci
+      JWT_AUDIENCE: ekms-web-ci
+      AUTH_ALLOWED_ORIGINS: http://localhost:3000
+      AUTH_COOKIE_SECURE: 'false'
+      AUTH_LOGIN_IP_LIMIT: '100'
+      AUTH_LOGIN_ACCOUNT_LIMIT: '7'
+      AUTH_REGISTER_IP_LIMIT: '100'
+      AUTH_REFRESH_IP_LIMIT: '100'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @ekms/api db:generate
+      - run: pnpm --filter @ekms/api exec prisma migrate deploy
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm test:integration
+      - run: pnpm build
+      - run: pnpm db:validate
+      - run: docker compose --env-file .env.example config --quiet

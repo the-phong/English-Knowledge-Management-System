@@ -1,0 +1,47 @@
+{
+  "name": "@ekms/api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node --test test/unit/*.test.cjs",
+    "test:integration": "node --test test/integration/*.test.cjs",
+    "db:validate": "prisma validate",
+    "db:generate": "prisma generate",
+    "db:status": "prisma migrate status"
+  },
+  "dependencies": {
+    "@ekms/config": "workspace:*",
+    "@ekms/contracts": "workspace:*",
+    "@nestjs/common": "11.2.7",
+    "@nestjs/core": "11.2.7",
+    "@nestjs/platform-express": "11.2.7",
+    "@prisma/client": "6.19.3",
+    "argon2": "0.45.1",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.15.1",
+    "cookie-parser": "1.4.7",
+    "dotenv": "17.2.3",
+    "ioredis": "5.11.1",
+    "jsonwebtoken": "9.0.3",
+    "pg": "8.23.1",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "11.2.7",
+    "@types/cookie-parser": "1.4.10",
+    "@types/express": "5.0.5",
+    "@types/jsonwebtoken": "9.0.10",
+    "@types/node": "24.10.1",
+    "@types/pg": "8.23.1",
+    "@types/supertest": "7.2.1",
+    "prisma": "6.19.3",
+    "supertest": "7.3.1",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
+  }
+}
