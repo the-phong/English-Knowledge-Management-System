@@ -90,4 +90,4 @@ The original Docker image-export failure occurred with low Windows disk space. F
 | `docker compose config --quiet` | 0 | Compose config valid. |
 | `git diff --check` | 0 | Final rerun passed after documentation edits. |
 
-No tokens, cookies, password hashes, or secret values were captured in this evidence. The Phase 02 commit and push are recorded in the final chat report after delivery.
+No tokens, cookies, password hashes, or secret values were captured in this evidence. Implementation commit `7731eea162f1af657e4df55dd8d501e28081b74d` was pushed to `refs/heads/feature/ekms-p02-auth` (exit 0); `git ls-remote` matched it, and remote `master` remained `89e4c6b1defea5bf6c89c7a71f450e3abd491e8a`. The final documentation-commit SHA and remote verification are recorded in the chat report.

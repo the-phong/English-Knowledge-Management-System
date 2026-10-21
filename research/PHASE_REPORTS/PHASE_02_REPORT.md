@@ -2,7 +2,7 @@
 
 ## 1. Executive Summary
 
-**Verification status: PASS; delivery pending at report-writing time.** Phase 02 implements multi-user authentication, server-authoritative sessions, refresh rotation and replay detection, an authentication UI, a reviewed additive migration, and security tests. The earlier Docker Desktop image-export failure did not recur after disk space was restored. The corrected combined integration suite, latest-image build, live proxy smoke, and real Chromium browser flow passed. Final Project Controller and Product Owner acceptance remains their decision. No Phase 03 work was started.
+**Phase 02 execution status: PASS; eligible for Product Owner and Project Controller review.** Phase 02 implements multi-user authentication, server-authoritative sessions, refresh rotation and replay detection, an authentication UI, a reviewed additive migration, and security tests. The earlier Docker Desktop image-export failure did not recur after disk space was restored. The corrected combined integration suite, latest-image build, live proxy smoke, and real Chromium browser flow passed. The verified implementation commit was pushed only to the approved feature branch. Final acceptance remains the Product Owner's and Project Controller's decision. No Phase 03 work was started.
 
 ## 2. Git Baseline
 
@@ -112,24 +112,24 @@ Full commands, recovery context, and sanitized outcomes are in `research/evidenc
 
 ## 11. Acceptance Gates A01–A16
 
-| Gate | Status at report-writing time | Evidence / remaining work                                                                      |
-| ---- | ----------------------------- | ---------------------------------------------------------------------------------------------- |
-| A01  | PASS                          | Exact Phase 01 parent and branch verified                                                      |
-| A02  | PASS                          | Additive SQL, constraints, and dev/test migration status verified                              |
-| A03  | PASS                          | Registration and concurrent normalized-email uniqueness HTTP tests                             |
-| A04  | PASS                          | Argon2id and generic invalid-credential tests                                                  |
-| A05  | PASS                          | 10-minute strict JWT and negative tests                                                        |
-| A06  | PASS                          | 256-bit opaque token, HMAC storage, scoped 30-day cookie tests                                 |
-| A07  | PASS                          | Rotation, replay, family revocation, concurrent race, rollback integration suite               |
-| A08  | PASS                          | Logout, logout-all, session list, selected revoke HTTP tests and smoke                         |
-| A09  | PASS                          | Ownership 404 and two-user isolation tests                                                     |
-| A10  | PASS                          | Origin, CORS, cookie unit/HTTP/browser tests                                                   |
-| A11  | PASS                          | 429/Retry-After and security-event persistence                                                 |
-| A12  | PASS                          | Seven web tests and real Chromium auth/restoration/protected-navigation smoke                  |
-| A13  | PASS                          | Combined integration, current image build/export, migration status, runtime and quality checks |
-| A14  | PASS                          | Phase 01 health, worker, config, and contract tests remain passing                             |
-| A15  | PASS                          | README, ADR, test scripts, sanitized evidence and this report                                  |
-| A16  | PENDING                       | Commit and feature-only push, then independent remote verification                             |
+| Gate | Status at report-writing time | Evidence / remaining work                                                                             |
+| ---- | ----------------------------- | ----------------------------------------------------------------------------------------------------- |
+| A01  | PASS                          | Exact Phase 01 parent and branch verified                                                             |
+| A02  | PASS                          | Additive SQL, constraints, and dev/test migration status verified                                     |
+| A03  | PASS                          | Registration and concurrent normalized-email uniqueness HTTP tests                                    |
+| A04  | PASS                          | Argon2id and generic invalid-credential tests                                                         |
+| A05  | PASS                          | 10-minute strict JWT and negative tests                                                               |
+| A06  | PASS                          | 256-bit opaque token, HMAC storage, scoped 30-day cookie tests                                        |
+| A07  | PASS                          | Rotation, replay, family revocation, concurrent race, rollback integration suite                      |
+| A08  | PASS                          | Logout, logout-all, session list, selected revoke HTTP tests and smoke                                |
+| A09  | PASS                          | Ownership 404 and two-user isolation tests                                                            |
+| A10  | PASS                          | Origin, CORS, cookie unit/HTTP/browser tests                                                          |
+| A11  | PASS                          | 429/Retry-After and security-event persistence                                                        |
+| A12  | PASS                          | Seven web tests and real Chromium auth/restoration/protected-navigation smoke                         |
+| A13  | PASS                          | Combined integration, current image build/export, migration status, runtime and quality checks        |
+| A14  | PASS                          | Phase 01 health, worker, config, and contract tests remain passing                                    |
+| A15  | PASS                          | README, ADR, test scripts, sanitized evidence and this report                                         |
+| A16  | PASS                          | Implementation commit pushed to the feature branch; remote SHA verified; protected `master` unchanged |
 
 ## 12. Risks, Limitations, and Deferred Work
 
@@ -137,7 +137,7 @@ The prior containerd failure may have related to low disk space, but its exact r
 
 ## 13. Git Delivery
 
-At the time this report is written, Phase 02 files are uncommitted on `feature/ekms-p02-auth` and remote Phase 02 is absent. After final review, only this branch may be committed and pushed using `git push -u origin HEAD:refs/heads/feature/ekms-p02-auth`. The final chat report records commit SHA, push result, remote verification, and protected `master` before/after. No merge or deployment is authorized.
+Implementation commit `7731eea162f1af657e4df55dd8d501e28081b74d` (`feat(auth): implement secure authentication and sessions`) was pushed with `git push -u origin HEAD:refs/heads/feature/ekms-p02-auth` (exit 0). An independent `git ls-remote` matched that SHA, while remote `master` remained `89e4c6b1defea5bf6c89c7a71f450e3abd491e8a`. This report is delivered in a documentation-only follow-up commit; the final feature-branch SHA and clean-tree verification are recorded in the final chat report because a commit cannot contain its own SHA. No merge or deployment occurred.
 
 ## 14. Phase 03 Readiness
 
