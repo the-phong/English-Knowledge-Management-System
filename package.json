@@ -1,0 +1,31 @@
+{
+  "name": "ekms",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24.13.0 <25",
+    "pnpm": "11.25.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "eslint apps/api/src apps/api/test apps/worker/src apps/worker/test apps/web/src apps/web/test packages/config/src packages/config/test packages/contracts/src packages/contracts/test",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:integration": "turbo run test:integration",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
+    "db:validate": "pnpm --filter @ekms/api exec prisma validate",
+    "db:status": "pnpm --filter @ekms/api exec prisma migrate status"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.1",
+    "@types/node": "24.10.1",
+    "eslint": "9.39.1",
+    "prettier": "3.9.10",
+    "turbo": "2.11.10",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.46.4"
+  }
+}

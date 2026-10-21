@@ -1,0 +1,2 @@
+-- Phase 01 baseline: intentionally no domain tables.
+-- Prisma Migrate records the controlled starting point for later reviewed migrations.
