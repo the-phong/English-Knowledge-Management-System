@@ -28,6 +28,21 @@ export class RedisService implements OnModuleDestroy {
     await this.client.ping();
   }
 
+  async consumeRateLimit(
+    key: string,
+    windowSeconds: number,
+  ): Promise<{ count: number; retryAfter: number }> {
+    await this.check();
+    const result = await this.client.eval(
+      "local n=redis.call('INCR',KEYS[1]); if n==1 then redis.call('EXPIRE',KEYS[1],ARGV[1]); end; return {n,redis.call('TTL',KEYS[1])}",
+      1,
+      key,
+      windowSeconds,
+    );
+    const [count, ttl] = result as [number, number];
+    return { count, retryAfter: Math.max(1, ttl) };
+  }
+
   async onModuleDestroy(): Promise<void> {
     this.client.disconnect();
   }

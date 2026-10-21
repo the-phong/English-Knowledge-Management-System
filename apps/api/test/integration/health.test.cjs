@@ -1,4 +1,5 @@
 require('reflect-metadata');
+const { Buffer } = require('node:buffer');
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const request = require('supertest');
@@ -18,6 +19,17 @@ async function createApp(databaseCheck, redisCheck) {
       API_PORT: 3001,
       DATABASE_URL: 'postgresql://test:local@localhost/test',
       REDIS_URL: 'redis://localhost:6379',
+      NODE_ENV: 'test',
+      JWT_SIGNING_KEY_B64: Buffer.alloc(32, 1).toString('base64'),
+      REFRESH_PEPPER_B64: Buffer.alloc(32, 2).toString('base64'),
+      JWT_ISSUER: 'ekms-test',
+      JWT_AUDIENCE: 'ekms-test-web',
+      AUTH_ALLOWED_ORIGINS: ['http://localhost:3000'],
+      AUTH_COOKIE_SECURE: false,
+      AUTH_LOGIN_IP_LIMIT: 20,
+      AUTH_LOGIN_ACCOUNT_LIMIT: 5,
+      AUTH_REGISTER_IP_LIMIT: 5,
+      AUTH_REFRESH_IP_LIMIT: 30,
     })
     .overrideProvider(DatabaseService)
     .useValue({ check: databaseCheck, onModuleDestroy: async () => {} })

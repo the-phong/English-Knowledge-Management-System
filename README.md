@@ -1,6 +1,6 @@
-# EKMS — Foundation
+# EKMS — Foundation and Authentication
 
-English Knowledge Management System is a multi-user English learning product. This repository currently contains **Phase 01 infrastructure only**. Registration, vocabulary, IELTS catalog, learning, Writing, mastery, dashboard, AI Tutor, and Web3 are not implemented. The approved [product specification](https://docs.google.com/document/d/17rny6Cr5BgZ3q_pS7MFjx97LjRXEvXKxUtOhYp4ogMA/edit) governs later work; Appendix D v1.4 takes priority for changed business rules.
+English Knowledge Management System is a multi-user English learning product. This repository contains Phase 01 infrastructure and Phase 02 authentication. Vocabulary, IELTS catalog, learning, Writing, mastery, dashboard, AI Tutor, and Web3 are not implemented. The approved [product specification](https://docs.google.com/document/d/17rny6Cr5BgZ3q_pS7MFjx97LjRXEvXKxUtOhYp4ogMA/edit) governs later work; Appendix D v1.4 takes priority for changed business rules.
 
 ## Architecture and layout
 
@@ -19,7 +19,7 @@ Versions are pinned in manifests and `pnpm-lock.yaml`. Do not use `latest` image
 ## Setup and local development
 
 1. `pnpm install --frozen-lockfile`
-2. Copy `.env.example` to `.env` and replace the placeholder local password with a unique value. Never commit `.env`. The local `.env` is for Compose interpolation and host-side tooling; Compose injects service-network URLs into containers.
+2. Copy `.env.example` to `.env`, replace the local database password, and generate two **independent** 32-byte base64 secrets for `JWT_SIGNING_KEY_B64` and `REFRESH_PEPPER_B64` (for example, `openssl rand -base64 32` run separately twice). Set exact browser origins and cookie mode. Never commit `.env`. The local `.env` is for Compose interpolation and host-side tooling; Compose injects service-network URLs into containers.
 3. `docker compose config --quiet` to validate configuration.
 4. `docker compose up --build -d` to start this project's isolated stack. Compose project name is `ekms-p01-foundation`. It creates only its own `postgres_data` volume and does not use older EKMS volumes.
 5. `docker compose ps` and `curl -i http://127.0.0.1:3001/api/v1/health/ready` to verify health; visit `http://127.0.0.1:3000` for the shell.
@@ -28,9 +28,27 @@ For a hybrid workflow, start only `postgres` and `redis` with Compose and provid
 
 ## Quality commands
 
-`pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, and `pnpm build` run the foundation checks. Tests use controlled doubles; they do not modify PostgreSQL. `pnpm db:validate` validates the Prisma schema, while `pnpm db:status` checks migration history against the configured database. Run database-connected commands only after confirming the target is the isolated EKMS development database.
+`pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, and `pnpm build` run quality checks. Authentication integration tests require the isolated `ekms_p02_test` PostgreSQL database and an explicit `DATABASE_URL` pointing to it; they refuse any other target. They create and remove only their own users. `pnpm db:validate` validates the Prisma schema, while `pnpm db:status` checks migration history against the configured database. Run database-connected commands only after confirming the target is an isolated EKMS database.
 
-The Prisma schema currently has no domain models. Its empty Phase 01 baseline migration creates only Prisma migration history, not business tables. After confirming the target is this project's isolated development database, run `docker compose exec -T api pnpm --filter @ekms/api exec prisma migrate deploy` and then `docker compose exec -T api pnpm --filter @ekms/api db:status`. The first owning business phase must add reviewed schema changes and migrations. Do not run `prisma migrate reset` or `docker compose down -v` against any database containing data. The worker starts and connects to Redis but does not process a production job. Do not infer business functionality from its readiness log.
+For local HTTP integration, create `ekms_p02_test` once inside this Compose project's PostgreSQL service, migrate that database, then run the suite with the test URL. The test setup uses higher rate limits so its repeated login assertions do not throttle unrelated cases; it still verifies account-oriented 429 behavior at its configured threshold:
+
+```bash
+docker compose exec -T postgres sh -lc 'createdb -U "$POSTGRES_USER" ekms_p02_test'
+docker compose run --rm --no-deps api sh -lc 'export DATABASE_URL="${DATABASE_URL%/*}/ekms_p02_test?schema=public"; pnpm --filter @ekms/api exec prisma migrate deploy'
+docker compose run --rm --no-deps -e REDIS_URL=redis://redis:6379/1 -e AUTH_LOGIN_IP_LIMIT=100 -e AUTH_LOGIN_ACCOUNT_LIMIT=7 -e AUTH_REGISTER_IP_LIMIT=100 -e AUTH_REFRESH_IP_LIMIT=100 api sh -lc 'export DATABASE_URL="${DATABASE_URL%/*}/ekms_p02_test?schema=public"; pnpm test:integration'
+```
+
+Skip the first command if that database already exists. Confirm Redis logical database 1 is unused before running the test command; the test suite uses it to keep rate counters separate from development traffic. `node research/evidence/phase02-proxy-smoke.mjs` checks same-origin cookie propagation against the running local stack and removes only the temporary user it creates.
+
+The `.env.example` IP limits of 100 requests per hour are local development settings. Requests through the Next.js proxy share the API socket peer address, so this bucket is shared by local users; the account login limit remains 5 attempts per hour. A multi-user deployment needs a reviewed trusted-ingress design before tuning IP limits. Do not trust arbitrary `X-Forwarded-For` headers. A real Chromium smoke is available at `research/evidence/phase02-browser-e2e.cjs`; install Playwright in an isolated test environment and supply it through `NODE_PATH` when running that script. It creates and removes its own test user.
+
+The Phase 01 baseline migration remains intact. Phase 02 adds the reviewed `User`, `RefreshSession`, and `SecurityEvent` schema and migration. After confirming the target is this project's isolated development database, run `docker compose exec -T api pnpm --filter @ekms/api exec prisma migrate deploy` and then `docker compose exec -T api pnpm --filter @ekms/api db:status`. Do not run `prisma migrate reset` or `docker compose down -v` against any database containing data. The worker starts and connects to Redis but does not process a production job.
+
+## Authentication
+
+The entry page links to `/auth`; successful login opens `/app`, an authenticated landing page. `/account` lists active sessions and offers revoke, logout, and logout-all. Registration creates an account but requires a separate login. All auth mutations require an `Origin` matching `AUTH_ALLOWED_ORIGINS`; configure the exact browser origin, including port. The access token is kept in memory, and the HttpOnly refresh cookie restores a session after reload. If refresh reuse is detected, the whole token family is revoked. The browser does not store tokens in local or session storage. See [ADR 0004](docs/adr/0004-authentication-and-session-security.md) for session, cookie, CSRF, rate-limit, and multi-tab decisions.
+
+Endpoints are `POST /api/v1/auth/register`, `login`, `refresh`, `logout`, `logout-all`; `GET /api/v1/auth/sessions`, `GET /api/v1/me`; and `DELETE /api/v1/auth/sessions/:id`. Successful responses use `{ "data": ... }`; errors use `{ "error": { "code", "message", "requestId" } }`. Never paste token or cookie values into logs or support chats.
 
 ## Operations and troubleshooting
 

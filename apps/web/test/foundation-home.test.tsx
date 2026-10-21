@@ -7,9 +7,7 @@ test('foundation page renders a semantic main region without fake workflows', ()
   const html = renderToStaticMarkup(<FoundationHome />);
   assert.match(html, /<main\b/);
   assert.match(html, /<h1>/);
-  assert.match(
-    html,
-    /Authentication and learning workflows are not available yet/,
-  );
-  assert.doesNotMatch(html, /Sign in|Save a word|Start quiz/);
+  assert.match(html, /Learning features will be.*later phases/);
+  assert.match(html, /href="\/auth"/);
+  assert.doesNotMatch(html, /Save a word|Start quiz/);
 });
