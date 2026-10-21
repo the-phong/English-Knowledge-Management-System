@@ -196,6 +196,20 @@ test('session restoration shows account security and revokes an owned session', 
     await waitFor(() => assert.ok(screen.getByText('Account and security')));
     await waitFor(() => assert.ok(screen.getByText(/Other session/)));
     fireEvent.click(screen.getByRole('button', { name: 'Revoke' }));
+    assert.ok(
+      screen.getByRole('group', { name: 'Confirm session revocation' }),
+    );
+    await waitFor(() =>
+      assert.equal(
+        dom.window.document.activeElement,
+        screen.getByRole('button', { name: 'Confirm revoke' }),
+      ),
+    );
+    assert.equal(
+      calls.some((item) => item.startsWith('DELETE ')),
+      false,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm revoke' }));
     await waitFor(() =>
       assert.ok(
         calls.some(
@@ -209,6 +223,12 @@ test('session restoration shows account security and revokes an owned session', 
     assert.ok(screen.getByRole('button', { name: 'Sign out' }));
     fireEvent.click(
       screen.getByRole('button', { name: 'Sign out everywhere' }),
+    );
+    assert.ok(
+      screen.getByRole('group', { name: 'Confirm sign out everywhere' }),
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Confirm sign out everywhere' }),
     );
     await waitFor(() =>
       assert.ok(calls.includes('POST /api/v1/auth/logout-all')),

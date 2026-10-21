@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './auth-context';
+import { LoadingState } from '../components/ui/surfaces';
 
 export function ProtectedShell({ children }: { children: React.ReactNode }) {
   const { state } = useAuth();
@@ -12,8 +13,8 @@ export function ProtectedShell({ children }: { children: React.ReactNode }) {
   }, [state.status, router]);
   if (state.status === 'loading')
     return (
-      <main className="page-shell">
-        <p role="status">Checking your session…</p>
+      <main className="auth-status">
+        <LoadingState label="Checking your session…" />
       </main>
     );
   if (state.status === 'anonymous') return null;
